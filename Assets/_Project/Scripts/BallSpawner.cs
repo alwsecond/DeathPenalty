@@ -1,7 +1,7 @@
 ﻿using FishNet.Object;
 using UnityEngine;
 
-public class ObjectSpawner : NetworkBehaviour
+public class BallSpawner : NetworkBehaviour
 {
     [SerializeField] private NetworkObject _prefabToSpawn;
 

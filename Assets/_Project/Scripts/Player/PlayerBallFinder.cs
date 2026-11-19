@@ -1,65 +1,40 @@
-﻿using System;
-using FishNet.Object;
+﻿using FishNet.Object;
 using UnityEngine;
 
 public class PlayerBallFinder : NetworkBehaviour
 {
     [SerializeField] private Transform _feetPoint;
-    [SerializeField] private float _magnetRadius = 1.2f;
-    [SerializeField] private bool _onlyHostTest = true;
+    [SerializeField, Min(0.1f)] private float _magnetRadius = 1.2f;
 
     public Transform FeetPoint => _feetPoint != null ? _feetPoint : transform;
+    
+    private DynamicCrosshair _crosshair;
 
-    private BallState _ball;
-    private float _blockedUntil;
-
-    private void Awake() => enabled = false;
-
-    public override void OnStartServer()
+    public override void OnStartClient()
     {
-        base.OnStartServer();
-        enabled = true;
-        TrySubscribe();
+        base.OnStartClient();
+        if (IsOwner)
+            _crosshair = DynamicCrosshair.Instance;
+    }
+    
+    private void FixedUpdate()
+    {
+        if (!IsOwner) return;
+
+        BallState ball = BallState.Instance;
+        if (ball == null || ball.IsHeld) return;
+        if ((ball.transform.position - FeetPoint.position).sqrMagnitude > _magnetRadius * _magnetRadius) return;
+        
+        _crosshair.Expand();
+        ball.SetActive(NetworkObject, FeetPoint);
     }
 
     public override void OnStopServer()
     {
+        BallState ball = BallState.Instance;
+        if (ball != null && ball.IsHeldBy(NetworkObject)) ball.SetDefault();
+        StrikerState roles = StrikerState.Instance;
+        if (roles != null && roles.IsStriker(NetworkObject)) roles.Clear();
         base.OnStopServer();
-        if (_ball != null)
-            _ball.Status.OnChange -= OnBallStatusChanged;
-        _ball = null;
-    }
-
-    // Вызывает BallKick после удара: "этот игрок не может взять мяч N секунд"
-    public void BlockPickup(float seconds) => _blockedUntil = Time.time + seconds;
-
-    private void TrySubscribe()
-    {
-        _ball = BallState.Instance;
-        if (_ball == null) return;
-
-        _ball.Status.OnChange += OnBallStatusChanged;
-        enabled = _ball.Status.Value == BallStatus.Default;
-    }
-
-    private void OnBallStatusChanged(BallStatus prev, BallStatus next, bool asServer)
-    {
-        if (!asServer) return;
-        enabled = next == BallStatus.Default;
-    }
-
-    private void Update()
-    {
-        if (_ball == null) { TrySubscribe(); return; }
-
-        if (_onlyHostTest && !IsOwner) return;
-        if (Time.time < _blockedUntil) return;
-
-        float r = _magnetRadius;
-        if ((_ball.transform.position - FeetPoint.position).sqrMagnitude > r * r) return;
-
-        if (_ball.Status.Value != BallStatus.Default) return; // защита от двух игроков в одном кадре
-
-        _ball.SetActive(NetworkObject, FeetPoint);
     }
 }

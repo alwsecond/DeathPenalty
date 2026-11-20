@@ -1,87 +1,59 @@
-﻿using FishNet.Object;
+﻿using FishNet.Connection;
+using FishNet.Object;
 using FishNet.Object.Synchronizing;
-using UnityEngine;
+using System;
 
-public enum BallStatus { Default, Active }
+public enum BallStatus
+{
+    Idle,
+    Active
+}
 
-[RequireComponent(typeof(Rigidbody), typeof(SphereCollider))]
 public class BallState : NetworkBehaviour
 {
-    public static BallState Instance { get; private set; }
+    public static event Action<bool> OnLocalHoldChanged;
 
-    public readonly SyncVar<BallStatus> Status = new SyncVar<BallStatus>(BallStatus.Default);
-    public readonly SyncVar<NetworkObject> Holder = new SyncVar<NetworkObject>(null);
-    public Transform FeetPoint { get; private set; }
-    public bool IsHeld => Status.Value == BallStatus.Active;
-    public bool IsHeldBy(NetworkObject player) => IsHeld && Holder.Value == player;
+    private readonly SyncVar<BallStatus> _currentState = new SyncVar<BallStatus>(BallStatus.Idle);
+    private readonly SyncVar<NetworkConnection> _currentHolder = new SyncVar<NetworkConnection>();
 
-    private Rigidbody _rb;
-    private Collider _collider;
-    private Collider[] _holderColliders;
+    private bool _predictedLocalHold;
 
-    private void Awake()
-    {
-        _rb = GetComponent<Rigidbody>();
-        _collider = GetComponent<Collider>();
-        _rb.isKinematic = true;
-    }
+    public BallStatus CurrentState => _currentState.Value;
+    public NetworkConnection CurrentHolder => _currentHolder.Value;
+
+    public bool IsLocallyHeld => _predictedLocalHold ||
+                                 (_currentState.Value == BallStatus.Active && _currentHolder.Value == ClientManager.Connection);
 
     public override void OnStartNetwork()
     {
-        base.OnStartNetwork();
-        Instance = this;
-    }
-
-    public override void OnStartServer()
-    {
-        base.OnStartServer();
-        _rb.isKinematic = false;
-        _rb.useGravity = true;
-        _rb.linearDamping = 0f;
-        _rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
-        _rb.interpolation = RigidbodyInterpolation.Interpolate;
-    }
-
-    public override void OnStopServer()
-    {
-        RestoreCollisions();
-        _rb.isKinematic = true;
-        base.OnStopServer();
+        _currentState.OnChange += OnSyncChanged;
+        _currentHolder.OnChange += OnSyncChanged;
     }
 
     public override void OnStopNetwork()
     {
-        if (Instance == this) Instance = null;
-        base.OnStopNetwork();
+        _currentState.OnChange -= OnSyncChanged;
+        _currentHolder.OnChange -= OnSyncChanged;
     }
 
-    public void SetActive(NetworkObject player, Transform feetPoint)
+    public void PredictLocalHold()
     {
-        if (!IsServerInitialized || player == null || feetPoint == null || IsHeld) return;
-        FeetPoint = feetPoint;
-        Holder.Value = player;
-        Status.Value = BallStatus.Active;
-        _holderColliders = player.GetComponentsInChildren<Collider>();
-        foreach (Collider other in _holderColliders)
-            if (other != null) Physics.IgnoreCollision(_collider, other, true);
-        _rb.angularVelocity = Vector3.zero;
-        _rb.WakeUp();
+        if (_predictedLocalHold) return;
+        _predictedLocalHold = true;
+        OnLocalHoldChanged?.Invoke(true);
     }
 
-    public void SetDefault()
+    private void OnSyncChanged<T>(T prev, T next, bool asServer)
     {
-        if (!IsServerInitialized) return;
-        RestoreCollisions();
-        FeetPoint = null;
-        Holder.Value = null;
-        Status.Value = BallStatus.Default;
+        if (asServer) return;
+        _predictedLocalHold = false;
+        OnLocalHoldChanged?.Invoke(IsLocallyHeld);
     }
 
-    private void RestoreCollisions()
+    [Server]
+    public void SetState(BallStatus newState, NetworkConnection newHolder)
     {
-        if (_holderColliders == null) return;
-        foreach (Collider other in _holderColliders)
-            if (other != null) Physics.IgnoreCollision(_collider, other, false);
-        _holderColliders = null;
+        _currentState.Value = newState;
+        _currentHolder.Value = newHolder;
     }
 }

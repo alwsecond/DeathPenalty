@@ -15,9 +15,7 @@ GameObject:
   - component: {fileID: 9170363077121804592}
   - component: {fileID: -9044991046818845333}
   - component: {fileID: 8810218672587700150}
-  - component: {fileID: 9132724606724281173}
   - component: {fileID: 1571834807867646160}
-  - component: {fileID: 3505688299133868686}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -148,7 +146,7 @@ MonoBehaviour:
   _enablePrediction: 0
   _predictionType: 0
   _localReconcileCorrectionType: 2
-  _graphicalObject: {fileID: 0}
+  _graphicalObject: {fileID: 7723789606812938752}
   _detachGraphicalObject: 0
   _enableStateForwarding: 1
   _networkTransform: {fileID: 0}
@@ -176,7 +174,7 @@ MonoBehaviour:
   <PredictedOwner>k__BackingField: {fileID: 0}
   NetworkBehaviours:
   - {fileID: -9044991046818845333}
-  - {fileID: 9132724606724281173}
+  - {fileID: 0}
   - {fileID: 1571834807867646160}
   InitializedParentNetworkBehaviour: {fileID: 0}
   InitializedNestedNetworkObjects: []
@@ -261,23 +259,6 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &9132724606724281173
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 382749667025877820}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e814399ed484e1aac08f8b263a6a743, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BallPossession
-  _componentIndexCache: 1
-  _addedNetworkObject: {fileID: 9170363077121804592}
-  _networkObjectCache: {fileID: 9170363077121804592}
-  _feetPoint: {fileID: 8202774355387280988}
-  _magnetRadius: 1.2
 --- !u!114 &1571834807867646160
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -300,23 +281,6 @@ MonoBehaviour:
   gravity: -25
   mouseSensitivity: 0.1
   playerCamera: {fileID: 6929127333142347681}
---- !u!114 &3505688299133868686
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 382749667025877820}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c7325a9c98a4a368f3184fe9f75ff48, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ChargeKick
-  _componentIndexCache: 255
-  _addedNetworkObject: {fileID: 9170363077121804592}
-  _networkObjectCache: {fileID: 0}
-  chargeTime: 1
-  aimSensitivity: 0.002
 --- !u!1 &5802158404239298411
 GameObject:
   m_ObjectHideFlags: 0
@@ -463,7 +427,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8202774355387280988}
-  m_Layer: 6
+  - component: {fileID: 7342202014619734659}
+  - component: {fileID: 305746905149761892}
+  m_Layer: 0
   m_Name: FeetPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -485,3 +451,41 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7723789606812938752}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &7342202014619734659
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7783000534562854453}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 0.5, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &305746905149761892
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7783000534562854453}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e814399ed484e1aac08f8b263a6a743, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FeetTrigger
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 9170363077121804592}
+  _networkObjectCache: {fileID: 0}
+  _feetPoint: {fileID: 8202774355387280988}
+  _pickupRadius: 1.2

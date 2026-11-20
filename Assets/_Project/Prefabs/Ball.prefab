@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 1268965059826356930}
   - component: {fileID: 4942611124598480127}
   - component: {fileID: 3419348858015583122}
-  - component: {fileID: 6228802747331234172}
-  - component: {fileID: 8654486910679362787}
+  - component: {fileID: 2226173766358092823}
+  - component: {fileID: 8937751468006868430}
   m_Layer: 3
   m_Name: Ball
   m_TagString: Untagged
@@ -84,7 +84,7 @@ MonoBehaviour:
   _enablePrediction: 0
   _predictionType: 0
   _localReconcileCorrectionType: 2
-  _graphicalObject: {fileID: 0}
+  _graphicalObject: {fileID: 8976970574238114628}
   _detachGraphicalObject: 0
   _enableStateForwarding: 1
   _networkTransform: {fileID: 0}
@@ -112,8 +112,8 @@ MonoBehaviour:
   <PredictedOwner>k__BackingField: {fileID: 0}
   NetworkBehaviours:
   - {fileID: 4942611124598480127}
-  - {fileID: 6228802747331234172}
-  - {fileID: 8654486910679362787}
+  - {fileID: 0}
+  - {fileID: 0}
   InitializedParentNetworkBehaviour: {fileID: 0}
   InitializedNestedNetworkObjects: []
   RuntimeParentNetworkBehaviour: {fileID: 0}
@@ -193,7 +193,7 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.45
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &6228802747331234172
+--- !u!114 &2226173766358092823
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -205,10 +205,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22e17959ed0343008528d2a097d190f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BallState
-  _componentIndexCache: 1
+  _componentIndexCache: 255
   _addedNetworkObject: {fileID: 1268965059826356930}
-  _networkObjectCache: {fileID: 1268965059826356930}
---- !u!114 &8654486910679362787
+  _networkObjectCache: {fileID: 0}
+--- !u!114 &8937751468006868430
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -219,13 +219,11 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7f056d8fbb880bc4ba5011938852fc04, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BallDribble
-  _componentIndexCache: 2
+  m_EditorClassIdentifier: Assembly-CSharp::BallFollow
+  _componentIndexCache: 255
   _addedNetworkObject: {fileID: 1268965059826356930}
-  _networkObjectCache: {fileID: 1268965059826356930}
-  _dribbleSpeed: 18
-  _maxSpeed: 20
-  _releaseDistance: 1.5
+  _networkObjectCache: {fileID: 0}
+  _ballState: {fileID: 2226173766358092823}
 --- !u!1001 &2220027846800909666
 PrefabInstance:
   m_ObjectHideFlags: 0

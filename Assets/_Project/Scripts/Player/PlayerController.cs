@@ -54,6 +54,8 @@ public class PlayerController : NetworkBehaviour
 
     private void Look()
     {
+        if (Cursor.lockState != CursorLockMode.Locked) return;
+
         Vector2 look = _input.actions["Look"].ReadValue<Vector2>() * mouseSensitivity;
 
         _pitch = Mathf.Clamp(_pitch - look.y, -90f, 90f);

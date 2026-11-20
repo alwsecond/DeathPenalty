@@ -3,8 +3,6 @@ using UnityEngine.UI;
 
 public class DynamicCrosshair : MonoBehaviour
 {
-    public static DynamicCrosshair Instance { get; private set; }
-
     [Header("Scale")]
     [SerializeField] private float _defaultScale = 1f;
     [SerializeField] private float _expandedScale = 1.2f;
@@ -19,7 +17,6 @@ public class DynamicCrosshair : MonoBehaviour
     [SerializeField] private Color _maxChargeColor = Color.red;
 
     [SerializeField] private Image _dot;
-    [SerializeField] private Image _circle;
 
     private RectTransform _rect;
 
@@ -30,19 +27,30 @@ public class DynamicCrosshair : MonoBehaviour
 
     private void Awake()
     {
-        Instance = this;
         _rect = (RectTransform)transform;
 
         _scale = _targetScale = _defaultScale;
         _targetColor = _defaultColor;
         _rect.localScale = Vector3.one * _scale;
         _rect.anchoredPosition = Vector2.zero;
-        _circle.enabled = false;
     }
-
-    private void OnDestroy()
+    
+    private void OnEnable()
     {
-        if (Instance == this) Instance = null;
+        BallState.OnLocalHoldChanged += HandleHoldChanged;
+    }
+    
+    private void OnDisable()
+    {
+        BallState.OnLocalHoldChanged -= HandleHoldChanged;
+    }
+    
+    private void HandleHoldChanged(bool isHolding)
+    {
+        if (isHolding)
+            Expand();
+        else
+            ResetCrosshair();
     }
 
     private void Update()
@@ -71,7 +79,6 @@ public class DynamicCrosshair : MonoBehaviour
     public void SetAim(Vector2 aim)
     {
         _targetOffset = Vector2.ClampMagnitude(aim, 1f) * _maxOffset;
-        _circle.enabled = true;
     }
 
     public void ResetCrosshair()
@@ -79,6 +86,5 @@ public class DynamicCrosshair : MonoBehaviour
         _targetScale = _defaultScale;
         _targetColor = _defaultColor;
         _targetOffset = Vector2.zero;
-        _circle.enabled = false;
     }
 }
